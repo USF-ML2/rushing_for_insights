@@ -59,7 +59,7 @@ model = DecisionTree.trainClassifier(parsedData, numClasses=2, categoricalFeatur
 # Evaluate model on training instances and compute training error
 predictions = model.predict(parsedData.map(lambda x: x.features))
 labelsAndPredictions = parsedData.map(lambda lp: lp.label).zip(predictions)
-trainErr = labelsAndPredictions.filter(lambda (v, p): v != p).count() / float(parsedData.count()) #0.340558784297
+trainErr = labelsAndPredictions.filter(lambda (v, p): v != p).count() / float(parsedData.count()) #0.09
 print('Training Error = ' + str(trainErr))
 print('Learned classification tree model:')
 print(model)
