@@ -2,3 +2,6 @@
 *~
 plays.csv
 plays.json
+*.csv
+*.png
+.ipynb_checkpoints/*
