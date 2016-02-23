@@ -17,7 +17,7 @@ def home():
     <p>To use the API, append the current URL in the following way: 'api/{<em>pos</em>}/{<em>week</em>}'</p>
     <p>Where <em>pos</em> is one of the following: QB, RB, WR, TE or Def</p>
     <p>and <em>week</em> is an integer 1-17.</p>
-    <p>For example, http://52.35.109.135:5000/QB/15 will give you the data for the quarterbacks in week 15.</p>
+    <p>For example, http://52.35.109.135:5000/api/QB/15 will give you the data for the quarterbacks in week 15.</p>
     <h5>&copy; Tate James Campbell 2016</h5>
   </body>
 </html>
