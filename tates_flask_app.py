@@ -23,7 +23,7 @@ def home():
 </html>
  """
 
-#enter model parameters 
+#enter model parameters
 @app.route('/toolbox', methods=['GET','POST'])
 def tools():
     return """
@@ -31,7 +31,7 @@ def tools():
   <body>
     <h1>Toolbox</h1>
     <h2>1. Rushing 4 Insights - pass/rush Prediction Model</h2>
-    <p>A machine learning algorithm my colleagues and I developed, try it out!</p> 
+    <p>A machine learning algorithm my colleagues and I developed, try it out!</p>
     <h4>Enter the current game conditions to predict whether the next play will be a <br> rushing play or a passing play.</h4>
     <form action="model_prediction" method="post" target ="_blank">
   Time left until end of game (in seconds):<br>
@@ -46,12 +46,18 @@ def tools():
   </body>
 </html>
     """
-    
+
 # run the logistic regression model
 # uses convert.json to convert strings into ints
 @app.route('/model_prediction', methods=['GET', 'POST'])
 def run_model():
     import json
+
+    # Request.form is a immutablemultidict so convert it to a nicer dict
+    form_data = {k: int(v[0]) for (k, v) in request.form.items()}
+
+    # Now just use form_data['v1'] etc
+
     with open('convert.json', 'r') as fp:
         vd = json.load(fp)
     v2 = vd[request.form['v2']]
@@ -90,9 +96,9 @@ def run_model():
 
     prediction = "According to our model, there is a %2.1f %% chance that the next play will be a %s play" % (prob, pred)
     return prediction
-    
-    
-# api method 1 
+
+
+# api method 1
 @app.route('/api/<pos>/<week>')
 def get_qbs(pos, week):
     """
@@ -110,9 +116,9 @@ def get_qbs(pos, week):
     for row in rows:
         out[row[0]] = {"dk_points" : row[3], "home_or_away" : row[4], "opponent" : row[5]}
     return jsonify(out)
-    
-    
-# api method 2 
+
+
+# api method 2
 @app.route('/api/<first_name>/<last_name>')
 def index(first_name, last_name):
     player = last_name + ', ' + first_name
@@ -129,7 +135,6 @@ def index(first_name, last_name):
     return out
 
 
-
 if __name__ == '__main__':
-    app.run(host = '0.0.0.0', port = 5000)
+    app.run(host = '0.0.0.0', port = 5000, debug=True)
     #app.debug()
