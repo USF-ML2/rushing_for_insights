@@ -35,12 +35,12 @@ def tools():
     <h4>Enter the current game conditions to predict whether the next play will be a <br> rushing play or a passing play.</h4>
     <form action="model_prediction" method="post" target ="_blank">
   Time left until end of game (in seconds):<br>
-  <input type="text" name="v2" value="3600"><br><br>Down:<br>
-  <input type="text" name="v3" value="1"><br><br>Distance to first down (yards):<br>
-  <input type="text" name="v4" value="10"><br><br>Yard Line<br>
-  <input type="text" name="v7" value="50"><br><br>Offensive Score:<br>
-  <input type="text" name="v8" value="0"><br><br>Defensive Score:<br>
-  <input type="text" name="v9" value="0"><br>
+  <input type="number" name="v2" value="3600"><br><br>Down:<br>
+  <input type="number" name="v3" value="1"><br><br>Distance to first down (yards):<br>
+  <input type="number" name="v4" value="10"><br><br>Yard Line<br>
+  <input type="number" name="v7" value="50"><br><br>Offensive Score:<br>
+  <input type="number" name="v8" value="0"><br><br>Defensive Score:<br>
+  <input type="number" name="v9" value="0"><br>
   <input type="submit" value="Submit">
 </form>
   </body>
@@ -51,23 +51,18 @@ def tools():
 # uses convert.json to convert strings into ints
 @app.route('/model_prediction', methods=['GET', 'POST'])
 def run_model():
-    import json
 
     # Request.form is a immutablemultidict so convert it to a nicer dict
     form_data = {k: int(v[0]) for (k, v) in request.form.items()}
-
     # Now just use form_data['v1'] etc
 
-    with open('convert.json', 'r') as fp:
-        vd = json.load(fp)
-    v2 = vd[request.form['v2']]
+    v2 = form_data['v2']
     if v2-1800>0:
         v1 = v2-1800
     else:
         v1 = 0
-    v1 = v2-1800
-    v3 = vd[request.form['v3']]
-    v4 = vd[request.form['v4']]
+    v3 = form_data['v3']
+    v4 = form_data['v4']
     if v2<=3600 and v2>2700:
         v5 = 1
     elif v2<=2700 and v2>1800:
@@ -76,9 +71,9 @@ def run_model():
         v5 = 3
     else:
         v5 = 4
-    v7 = vd[request.form['v7']]
-    v8 = vd[request.form['v8']]
-    v9 = vd[request.form['v9']]
+    v7 = form_data['v7']
+    v8 = form_data['v8']
+    v9 = form_data['v9']
     v6 = v8 - v9
     v = [v1,v2,v3,v4,v5,v6,v7,v8,v9]
     w = [-0.000204567427873, -0.000387913877518, 0.646879237819,
