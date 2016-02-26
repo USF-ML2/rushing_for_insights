@@ -52,6 +52,8 @@ class Play(object):
         self.time_to_half = self.time_left_in_game % (30*60)
         if self.time_left_in_game == 60 * 60 or self.time_left_in_game == 60 * 30:
             self.time_to_half = 30 * 60
+        if self.time_left_in_game <= 0:
+            self.time_to_half = self.time_left_in_game
 
     def label(self):
         self.type = None
