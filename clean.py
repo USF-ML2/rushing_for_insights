@@ -44,6 +44,8 @@ class Play(object):
         self.dist_to_first = int(vals[7])
         self.score_diff = self.off_score - self.def_score
         self.quarter = int(vals[1])
+        self.off = vals[4]
+        self.defe = vals[5]
         try:
             secs = int(vals[3])
         except ValueError:
@@ -82,11 +84,13 @@ class Play(object):
                 'yard_line': self.yard_line,
                 'off_score': self.off_score,
                 'def_score': self.def_score,
-                'is_pass': self.is_pass}
+                'is_pass': self.is_pass,
+                'off': self.off,
+                'def': self.defe}
 
     def as_csv(self):
         ''' returns a csv '''
-        attrs = ['time_to_half', 'time_left_in_game', 'down',
+        attrs = ['off', 'defe', 'time_to_half', 'time_left_in_game', 'down',
                   'dist_to_first', 'quarter', 'score_diff',
                   'yard_line', 'off_score', 'def_score',
                  'is_pass']
@@ -118,10 +122,11 @@ if __name__ == '__main__':
     print total
     print not_label
 
-    with open('plays.json', 'w+') as f:
-        '''f.write(','.join(['time_to_half', 'time_left_in_game', 'down',
+    with open('plays.csv', 'w+') as f:
+        '''f.write(','.join(['off', 'def', 'time_to_half', 'time_left_in_game', 'down',
                           'dist_to_first', 'quarter', 'score_diff',
                           'yard_line', 'off_score', 'def_score',
                          'is_pass']) + '\n')'''
         for p in plays:
-            f.write(json.dumps(p.as_dict()) + '\n')
+            #f.write(json.dumps(p.as_dict()) + '\n')
+            f.write(p.as_csv() + '\n')
