@@ -1,0 +1,46 @@
+<html>
+  <head>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.0/jquery.min.js"></script>
+    <!-- Compiled and minified CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.5/css/materialize.min.css">
+
+    <!-- Compiled and minified JavaScript -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.5/js/materialize.min.js"></script>
+    <script>
+        $(document).ready(function() {
+        $('select').material_select();
+    });</script>
+
+  </head>
+  <body>
+    <div class='container'>
+
+      <h2>Rushing 4 Insights</h2>
+      <h3>Pass/Rush Prediction Model</h3>
+      <p>Enter the current game conditions to predict whether the next play will be a rushing play or a passing play.</p>
+      <div class='row'>
+        <div class="col s6">
+          <form action="model_prediction" method="post" target ="_blank">
+            Time left until end of game (in seconds):<br>
+            <input type="number" name="v2" value="3600"><br>
+            <br>Down:<br>
+            <input class="with-gap" name="v3" type="radio" id='down1' value='1' checked /><label for="down1">1</label>
+            <input class="with-gap"  name="v3" type="radio" value='2' id='down2' /><label for="down2">2</label>
+            <input class="with-gap" name="v3" type="radio" value='3'  id='down3' /><label for="down3">3</label>
+            <input class="with-gap" name="v3" type="radio" value='4' id='down4' /><label for="down4">4</label>
+            <br>
+            <br>Distance to first down (yards):<br>
+            <p class="range-field">
+              <input name='v4' type="range" id="test5" min="0" max="100" value='10' />
+            </p>
+            <br>Yard Line<br>
+            <input type="number" name="v7" value="50"><br><br>Offensive Score:<br>
+            <input type="number" name="v8" value="0"><br><br>Defensive Score:<br>
+            <input type="number" name="v9" value="0"><br>
+            <input type="submit" value="Submit">
+          </form>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
