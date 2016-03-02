@@ -49,7 +49,7 @@ def run_model():
     form_data = {k: int(v[0]) for (k, v) in request.form.items()}
     vars_from_req = ['time_left_in_game', 'down_num', 'dist_to_first', 'yard_line',
         'off_team', 'off_score', 'def_team', 'def_score']
-    varS = {"%s" % v: form_data[v] for v in vars_from_req}
+    varS = {v : form_data[v] for v in vars_from_req}
     if varS['time_left_in_game'] - 1800 > 0:
         varS['time_to_half'] = varS['time_left_in_game'] - 1800
     else:
