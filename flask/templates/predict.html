@@ -22,21 +22,21 @@
         <div class="col s6">
           <form action="model_prediction" method="post" target ="_blank">
             Time left until end of game (in seconds):<br>
-            <input type="number" name="v2" value="3600"><br>
+            <input type="number" name="time_left_in_game" value="3600"><br>
             <br>Down:<br>
-            <input class="with-gap" name="v3" type="radio" id='down1' value='1' checked /><label for="down1">1</label>
-            <input class="with-gap"  name="v3" type="radio" value='2' id='down2' /><label for="down2">2</label>
-            <input class="with-gap" name="v3" type="radio" value='3'  id='down3' /><label for="down3">3</label>
-            <input class="with-gap" name="v3" type="radio" value='4' id='down4' /><label for="down4">4</label>
+            <input class="with-gap" name="down_num" type="radio" id='down1' value='1' checked /><label for="down1">1</label>
+            <input class="with-gap"  name="down_num" type="radio" value='2' id='down2' /><label for="down2">2</label>
+            <input class="with-gap" name="down_num" type="radio" value='3'  id='down3' /><label for="down3">3</label>
+            <input class="with-gap" name="down_num" type="radio" value='4' id='down4' /><label for="down4">4</label>
             <br>
             <br>Distance to first down (yards):<br>
             <p class="range-field">
-              <input name='v4' type="range" id="test5" min="0" max="100" value='10' />
+              <input name='dist_to_first' type="range" id="test5" min="0" max="100" value='10' />
             </p>
             <br>Yard Line<br>
-            <input type="number" name="v7" value="50"><br><br>Offensive Score:<br>
-            <input type="number" name="v8" value="0"><br><br>Defensive Score:<br>
-            <input type="number" name="v9" value="0"><br>
+            <input type="number" name="yard_line" value="50"><br><br>Offense:<br><input type="text" name="off_team" value="SF"><br>Offensive Score:<br>
+            <input type="number" name="off_score" value="0"><br><br>Defense:<br><input type="text" name="def_team" value="SEA"><br>Defensive Score:<br>
+            <input type="number" name="def_score" value="0"><br>
             <input type="submit" value="Submit">
           </form>
         </div>
