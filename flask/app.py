@@ -32,46 +32,59 @@ def tools():
 # uses convert.json to convert strings into ints
 @app.route('/model_prediction', methods=['GET', 'POST'])
 def run_model():
+    import pickle 
+    teams = ['ARI', 'ATL', 'BAL', 'BUF', 'CAR', 'CHI', 'CIN', 'CLE', 'DAL', 
+    'DEN', 'DET', 'GB', 'HOU', 'IND', 'JAC', 'KC', 'MIA', 'MIN', 'NE',
+    'NO', 'NYG', 'NYJ', 'OAK', 'PHI', 'PIT', 'SD', 'SEA', 'SF', 'STL',
+    'TB', 'TEN', 'WAS', '', 'AFC', 'NFC']
+    team_dict = dict()
+    i = 0
+    for t in teams:
+        vec = np.zeros(len(teams))
+        vec[i] = 1
+        team_dict[t] = vec
+        i += 1
     print request.form
     # Request.form is a immutablemultidict so convert it to a nicer dict
     form_data = {k: int(v[0]) for (k, v) in request.form.items()}
+    vars_from_req = ['time_left_in_game', 'down_num', 'dist_to_first', 'yard_line',
+        'off_team', 'off_score', 'def_team', 'def_score']
+    varS = {"%s" % v: form_data[v] for v in vars_from_req}
+    if varS['time_left_in_game'] - 1800 > 0:
+        varS['time_to_half'] = varS['time_left_in_game'] - 1800
+    else:
+        varS['time_to_half'] = varS['time_left_in_game']
     # Now just use form_data['v1'] etc
+    if varS['time_left_in_game'] <= 3600 and varS['time_left_in_game'] > 2700:
+        varS['quarter'] = 1
+    elif varS['time_left_in_game'] <= 2700 and varS['time_left_in_game'] > 1800:
+        varS['quarter'] = 2
+    elif varS['time_left_in_game'] <= 1800 and varS['time_left_in_game'] > 900:
+        varS['quarter'] = 3
+    elif varS['time_left_in_game'] <= 900 and varS['time_left_in_game'] >= 0:
+        varS['quarter'] = 4
+    else:
+        varS['quarter'] = 5
+    varS['score_diff'] = varS['off_score'] - varS['def_score']
+    off_vec = team_dict[varS['off_team']]
+    def_vec = team_dict[varS['def_team']]
+    X1 = [varS['time_to_half'], varS['time_left_in_game'], varS['down_num'],
+        varS['dist_to_first'], varS['quarter'], varS['score_diff'], 
+        varS['yard_line'], varS['off_score'], varS['def_score']]
+    X = X1 + off_vec + def_vec
+    with open('pickled_football_models/logreg_model.txt') as lr:
+        lr_clf = pickle.load(lr)
+    pred = lr_clf.predict(X)
+    # pass_prob = 1.0/(1.0 + (2.71828**logit))
+    # if pass_prob < 0.5:
+    #     pred = 'rushing'
+    #     prob = 100*(1.0 - pass_prob)
+    # else:
+    #     pred = 'passing'
+    #     prob = 100*pass_prob
 
-    v2 = form_data['v2']
-    if v2-1800>0:
-        v1 = v2-1800
-    else:
-        v1 = 0
-    v3 = form_data['v3']
-    v4 = form_data['v4']
-    if v2<=3600 and v2>2700:
-        v5 = 1
-    elif v2<=2700 and v2>1800:
-        v5 = 2
-    elif v2<=1800 and v2>900:
-        v5 = 3
-    else:
-        v5 = 4
-    v7 = form_data['v7']
-    v8 = form_data['v8']
-    v9 = form_data['v9']
-    v6 = v8 - v9
-    v = [v1,v2,v3,v4,v5,v6,v7,v8,v9]
-    w = [-0.000204567427873, -0.000387913877518, 0.646879237819,
-        0.095602992261, -0.366658206558, -0.0201826358395,
-        0.000821076191998, -0.0115295925119, 0.0133174758476]
-    nums = [v[i]*w[i] for i in range(9)]
-    logit = sum(nums)
-    pass_prob = 1.0/(1.0 + (2.71828**logit))
-    if pass_prob < 0.5:
-        pred = 'rushing'
-        prob = 100*(1.0 - pass_prob)
-    else:
-        pred = 'passing'
-        prob = 100*pass_prob
-
-    prediction = "According to our model, there is a %2.1f %% chance that the next play will be a %s play" % (prob, pred)
-    return prediction
+    #prediction = "According to our model, there is a %2.1f %% chance that the next play will be a %s play" % (prob, pred)
+    return pred
 
 
 # api method 1
