@@ -1,7 +1,19 @@
 from flask import Flask, request, jsonify, render_template
 import psycopg2, psycopg2.extras
+import numpy as np
 
 DB_DSN = "host=msandb.cejfkxnescks.us-west-2.rds.amazonaws.com dbname=mydb user=dbuser password=dbpassword"
+teams = ['ARI', 'ATL', 'BAL', 'BUF', 'CAR', 'CHI', 'CIN', 'CLE', 'DAL', 
+    'DEN', 'DET', 'GB', 'HOU', 'IND', 'JAC', 'KC', 'MIA', 'MIN', 'NE',
+    'NO', 'NYG', 'NYJ', 'OAK', 'PHI', 'PIT', 'SD', 'SEA', 'SF', 'STL',
+    'TB', 'TEN', 'WAS', '', 'AFC', 'NFC']
+team_dict = dict()
+i = 0
+for t in teams:
+    vec = [0]*len(teams)
+    vec[i] = 1
+    team_dict[t] = vec
+    i += 1
 
 app = Flask(__name__)
 
@@ -33,22 +45,17 @@ def tools():
 @app.route('/model_prediction', methods=['GET', 'POST'])
 def run_model():
     import pickle 
-    teams = ['ARI', 'ATL', 'BAL', 'BUF', 'CAR', 'CHI', 'CIN', 'CLE', 'DAL', 
-    'DEN', 'DET', 'GB', 'HOU', 'IND', 'JAC', 'KC', 'MIA', 'MIN', 'NE',
-    'NO', 'NYG', 'NYJ', 'OAK', 'PHI', 'PIT', 'SD', 'SEA', 'SF', 'STL',
-    'TB', 'TEN', 'WAS', '', 'AFC', 'NFC']
-    team_dict = dict()
-    i = 0
-    for t in teams:
-        vec = np.zeros(len(teams))
-        vec[i] = 1
-        team_dict[t] = vec
-        i += 1
-    print request.form
+    #print request.form
+    form_data = dict()
     # Request.form is a immutablemultidict so convert it to a nicer dict
-    form_data = {k: int(v[0]) for (k, v) in request.form.items()}
+    for k,v in request.form.items():
+        try:
+            form_data[k] = float(v)
+        except Exception:
+            form_data[k] = team_dict[v]
+    
     vars_from_req = ['time_left_in_game', 'down_num', 'dist_to_first', 'yard_line',
-        'off_team', 'off_score', 'def_team', 'def_score']
+         'off_team', 'off_score', 'def_team', 'def_score']
     varS = {v : form_data[v] for v in vars_from_req}
     if varS['time_left_in_game'] - 1800 > 0:
         varS['time_to_half'] = varS['time_left_in_game'] - 1800
@@ -66,25 +73,25 @@ def run_model():
     else:
         varS['quarter'] = 5
     varS['score_diff'] = varS['off_score'] - varS['def_score']
-    off_vec = team_dict[varS['off_team']]
-    def_vec = team_dict[varS['def_team']]
+    off_vec = varS['off_team']
+    def_vec = varS['def_team']
     X1 = [varS['time_to_half'], varS['time_left_in_game'], varS['down_num'],
         varS['dist_to_first'], varS['quarter'], varS['score_diff'], 
         varS['yard_line'], varS['off_score'], varS['def_score']]
     X = X1 + off_vec + def_vec
     with open('pickled_football_models/logreg_model.txt') as lr:
         lr_clf = pickle.load(lr)
-    pred = lr_clf.predict(X)
-    # pass_prob = 1.0/(1.0 + (2.71828**logit))
-    # if pass_prob < 0.5:
-    #     pred = 'rushing'
-    #     prob = 100*(1.0 - pass_prob)
-    # else:
-    #     pred = 'passing'
-    #     prob = 100*pass_prob
-
-    #prediction = "According to our model, there is a %2.1f %% chance that the next play will be a %s play" % (prob, pred)
-    return pred
+    print X
+    pred = str(int(lr_clf.predict(X)[0]))
+    pass_prob = lr_clf.predict_proba(X)[0][0]
+    if pass_prob < 0.5:
+        pred = 'rushing'
+        prob = 100*(1.0 - pass_prob)
+    else:
+        pred = 'passing'
+        prob = 100*pass_prob
+    prediction = "According to our model, there is a %2.1f %% chance that the next play will be a %s play" % (prob, pred)
+    return prediction
 
 
 # api method 1
@@ -125,5 +132,5 @@ def index(first_name, last_name):
 
 
 if __name__ == '__main__':
-    app.run(host = '0.0.0.0', port = 5000, debug=True)
+    app.run(host = '0.0.0.0', port = 5000)
     #app.debug()
